@@ -19,10 +19,24 @@ const sortSelect = document.getElementById('sort-select');
 const reviewButton = document.getElementById('review-button');
 const exportButton = document.getElementById('export-button');
 const summaryBox = document.getElementById('summary-box');
+const currentDateEl = document.getElementById('current-date');
 const GAS_ENABLED = typeof isGasConfigured === 'function' && isGasConfigured();
 
 function saveTodosLocal(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+function formatCurrentDate(){
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${now.getFullYear()} 年 ${month} 月 ${day} 日`;
+}
+
+function initCurrentDate(){
+  if(currentDateEl){
+    currentDateEl.textContent = formatCurrentDate();
+  }
 }
 
 function loadTodosLocal(){
@@ -112,26 +126,24 @@ function render(){
     if(t.completed) title.classList.add('todo-completed');
     left.appendChild(title);
 
-    const meta = document.createElement('div'); meta.className='todo-details';
-    meta.textContent = `${t.category || '未分類'} · ${t.status || '待處理'} · ${t.priority || '無優先級'}`;
-    left.appendChild(meta);
+    const badgeRow = document.createElement('div'); badgeRow.className='badge-row';
+    const categoryBadge = document.createElement('span'); categoryBadge.className='badge badge-category';
+    categoryBadge.textContent = t.category || '未分類';
+    const statusBadge = document.createElement('span'); statusBadge.className='badge badge-status';
+    statusBadge.textContent = t.status || '待處理';
+    const priorityBadge = document.createElement('span'); priorityBadge.className='badge badge-priority';
+    priorityBadge.textContent = t.priority || '無優先級';
+    badgeRow.append(categoryBadge, statusBadge, priorityBadge);
+    left.appendChild(badgeRow);
 
-    if(t.dueDate){
-      const due = document.createElement('div'); due.className='todo-details';
-      due.textContent = `到期日：${t.dueDate}`;
-      left.appendChild(due);
-    }
-
-    if(t.estimate){
-      const estimate = document.createElement('div'); estimate.className='todo-details';
-      estimate.textContent = `預估：${t.estimate} 小時`;
-      left.appendChild(estimate);
-    }
-
-    if(t.tags){
-      const tags = document.createElement('div'); tags.className='todo-details';
-      tags.textContent = t.tags;
-      left.appendChild(tags);
+    if(t.dueDate || t.estimate || t.tags){
+      const detailRow = document.createElement('div'); detailRow.className='todo-details';
+      const details = [];
+      if(t.dueDate) details.push(`到期：${t.dueDate}`);
+      if(t.estimate) details.push(`預估：${t.estimate} 小時`);
+      if(t.tags) details.push(t.tags);
+      detailRow.textContent = details.join(' · ');
+      left.appendChild(detailRow);
     }
 
     const actions = document.createElement('div'); actions.className='todo-actions';
@@ -352,4 +364,5 @@ reviewButton.addEventListener('click', computeWeeklyReview);
 });
 
 // initial render
+initCurrentDate();
 render();

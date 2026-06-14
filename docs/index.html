@@ -4,41 +4,78 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>To-Do List</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
   <main class="container">
-    <h1>To-Do List</h1>
+    <div class="hero-panel">
+      <div>
+        <h1>To-Do List</h1>
+        <p class="hero-text">讓任務管理更有條理：分類、狀態、優先級、週回顧與日曆匯出，適合學業、專案與生活計畫。</p>
+      </div>
+      <div class="hero-meta">
+        <div class="page-meta">今天是 <span id="current-date"></span></div>
+        <div class="feature-chips">
+          <span>快速新增</span>
+          <span>分類篩選</span>
+          <span>日曆匯出</span>
+        </div>
+      </div>
+    </div>
 
-    <form id="todo-form" class="todo-form">
-      <input id="todo-input" placeholder="新增待辦事項" required />
-      <input id="todo-date" type="date" />
-      <select id="todo-category">
-        <option value="">分類</option>
-        <option value="學業類">學業類</option>
-        <option value="開發類">開發類</option>
-        <option value="生活類">生活類</option>
-      </select>
-      <select id="todo-status">
-        <option value="待處理">待處理</option>
-        <option value="進行中">進行中</option>
-        <option value="阻塞中">阻塞中</option>
-        <option value="待驗證">待驗證</option>
-        <option value="完成">完成</option>
-      </select>
-      <select id="todo-priority">
-        <option value="">優先級</option>
-        <option value="緊急且重要">緊急且重要</option>
-        <option value="重要不緊急">重要不緊急</option>
-        <option value="緊急不重要">緊急不重要</option>
-        <option value="不緊急也不重要">不緊急也不重要</option>
-      </select>
-      <input id="todo-estimate" type="number" min="0" step="0.5" placeholder="預估時數" />
-      <input id="todo-tags" placeholder="#標籤 #情境" />
-      <button type="submit">新增</button>
-      <button type="button" id="fetch-quote">從 Quote API 加入</button>
-      <button type="button" id="sync-load">從 Spreadsheet 載入</button>
-    </form>
+    <div class="top-grid">
+      <section class="card card-form">
+        <div class="card-header">
+          <h2>新增任務</h2>
+          <p>填寫任務內容、分類與狀態，快速建立你的待辦清單。</p>
+        </div>
+        <form id="todo-form" class="todo-form">
+          <input id="todo-input" placeholder="新增待辦事項" required />
+          <div class="field-grid">
+            <input id="todo-date" type="date" />
+            <select id="todo-category">
+              <option value="">分類</option>
+              <option value="學業類">學業類</option>
+              <option value="開發類">開發類</option>
+              <option value="生活類">生活類</option>
+            </select>
+            <select id="todo-status">
+              <option value="待處理">待處理</option>
+              <option value="進行中">進行中</option>
+              <option value="阻塞中">阻塞中</option>
+              <option value="待驗證">待驗證</option>
+              <option value="完成">完成</option>
+            </select>
+            <select id="todo-priority">
+              <option value="">優先級</option>
+              <option value="緊急且重要">緊急且重要</option>
+              <option value="重要不緊急">重要不緊急</option>
+              <option value="緊急不重要">緊急不重要</option>
+              <option value="不緊急也不重要">不緊急也不重要</option>
+            </select>
+            <input id="todo-estimate" type="number" min="0" step="0.5" placeholder="預估時數" />
+            <input id="todo-tags" placeholder="#標籤 #情境" />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="primary">新增</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card card-summary">
+        <div class="card-header">
+          <h2>快速操作</h2>
+          <p>從這裡直接載入、匯出或用 Quote 快速新增任務。</p>
+        </div>
+        <section id="summary-box" class="summary-box"></section>
+        <div class="quick-actions">
+          <button type="button" id="fetch-quote">Quote 新增</button>
+          <button type="button" id="sync-load">載入 Spreadsheet</button>
+          <button type="button" id="review-button">週回顧</button>
+          <button type="button" id="export-button">匯出日曆</button>
+        </div>
+      </aside>
+    </div>
 
     <div id="todo-controls" class="todo-controls">
       <div class="filter-group">
@@ -79,13 +116,11 @@
       </div>
     </div>
 
-    <section id="summary-box" class="summary-box"></section>
-
     <ul id="todo-list"></ul>
   </main>
 
-<script src="js/api.js?v=4"></script>
-  <script src="js/gas.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+<script src="js/api.js?v=6"></script>
+  <script src="js/gas.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
