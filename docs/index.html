@@ -10,7 +10,7 @@
   <main class="container">
     <h1>To-Do List</h1>
 
-    <form id="todo-form">
+    <form id="todo-form" class="todo-form">
       <input id="todo-input" placeholder="新增待辦事項" required />
       <input id="todo-date" type="date" />
       <select id="todo-category">
@@ -40,11 +40,52 @@
       <button type="button" id="sync-load">從 Spreadsheet 載入</button>
     </form>
 
+    <div id="todo-controls" class="todo-controls">
+      <div class="filter-group">
+        <select id="filter-category">
+          <option value="">全部分類</option>
+          <option value="學業類">學業類</option>
+          <option value="開發類">開發類</option>
+          <option value="生活類">生活類</option>
+        </select>
+        <select id="filter-status">
+          <option value="">全部狀態</option>
+          <option value="待處理">待處理</option>
+          <option value="進行中">進行中</option>
+          <option value="阻塞中">阻塞中</option>
+          <option value="待驗證">待驗證</option>
+          <option value="完成">完成</option>
+        </select>
+        <select id="filter-priority">
+          <option value="">全部優先級</option>
+          <option value="緊急且重要">緊急且重要</option>
+          <option value="重要不緊急">重要不緊急</option>
+          <option value="緊急不重要">緊急不重要</option>
+          <option value="不緊急也不重要">不緊急也不重要</option>
+        </select>
+        <input id="filter-keyword" placeholder="搜尋標題、標籤、分類" />
+      </div>
+      <div class="filter-group">
+        <select id="sort-select">
+          <option value="created-desc">最新建立</option>
+          <option value="created-asc">最早建立</option>
+          <option value="dueDate-asc">最早到期</option>
+          <option value="dueDate-desc">最晚到期</option>
+          <option value="priority">優先級</option>
+          <option value="status">狀態</option>
+        </select>
+        <button type="button" id="review-button">週回顧</button>
+        <button type="button" id="export-button">匯出日曆</button>
+      </div>
+    </div>
+
+    <section id="summary-box" class="summary-box"></section>
+
     <ul id="todo-list"></ul>
   </main>
 
-  <script src="js/api.js?v=3"></script>
-  <script src="js/gas.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+<script src="js/api.js?v=4"></script>
+  <script src="js/gas.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>

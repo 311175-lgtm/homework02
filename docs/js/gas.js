@@ -27,8 +27,9 @@ async function gasGetTodos(){
 }
 
 async function gasCreateTodo(todo){
+  ensureGasConfigured();
   try{
-    const res = await fetch(GAS_BASE_URL,{
+    const res = await fetch(GAS_BASE_URL,{ 
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'create', todo})
@@ -44,7 +45,8 @@ async function gasCreateTodo(todo){
 async function gasUpdateTodo(id, fields){
   ensureGasConfigured();
   try{
-    const res = await fetch(GAS_BASE_URL,{
+    const res = await fetch(GAS_BASE_URL,{ 
+      method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'update', id, fields})
     });
@@ -59,7 +61,8 @@ async function gasUpdateTodo(id, fields){
 async function gasDeleteTodo(id){
   ensureGasConfigured();
   try{
-    const res = await fetch(GAS_BASE_URL,{
+    const res = await fetch(GAS_BASE_URL,{ 
+      method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'delete', id})
     });
