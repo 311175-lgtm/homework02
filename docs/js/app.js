@@ -6,6 +6,7 @@ const form = document.getElementById('todo-form');
 const input = document.getElementById('todo-input');
 const fetchQuoteBtn = document.getElementById('fetch-quote');
 const syncLoadBtn = document.getElementById('sync-load');
+const GAS_ENABLED = typeof isGasConfigured === 'function' && isGasConfigured();
 
 function saveTodosLocal(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
@@ -48,10 +49,12 @@ function render(){
         t.title = newText.trim();
         saveTodosLocal();
         render();
-        gasUpdateTodo(t.id,{title:t.title}).catch(err=>{
-          console.warn('Gas update failed:', err);
-          alert('更新 Google Spreadsheet 失敗，已本地儲存。');
-        });
+        if(GAS_ENABLED){
+          gasUpdateTodo(t.id,{title:t.title}).catch(err=>{
+            console.warn('Gas update failed:', err);
+            alert('更新 Google Spreadsheet 失敗，已本地儲存。');
+          });
+        }
       }
     });
     const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.textContent='刪除';
@@ -61,11 +64,13 @@ function render(){
       todos = todos.filter(x=>x.id!==t.id);
       saveTodosLocal();
       render();
-      try{
-        await gasDeleteTodo(t.id);
-      }catch(e){
-        console.warn('Gas delete failed', e);
-        alert('刪除 Google Spreadsheet 失敗，但已從頁面移除。');
+      if(GAS_ENABLED){
+        try{
+          await gasDeleteTodo(t.id);
+        }catch(e){
+          console.warn('Gas delete failed', e);
+          alert('刪除 Google Spreadsheet 失敗，但已從頁面移除。');
+        }
       }
     });
     actions.appendChild(editBtn); actions.appendChild(delBtn);
@@ -87,7 +92,9 @@ form.addEventListener('submit', async (e)=>{
   }catch(err){
     console.warn('Create via GAS failed, using local ID', err);
     newTodo.id = 'local-' + Date.now();
-    alert('新增 Google Spreadsheet 失敗，已本地顯示待辦。');
+    if(GAS_ENABLED){
+      alert('新增 Google Spreadsheet 失敗，已本地顯示待辦。');
+    }
   }
   todos.unshift(newTodo);
   input.value='';

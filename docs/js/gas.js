@@ -1,8 +1,20 @@
 // gas.js: wrapper for Google Apps Script Web App endpoints
 // TODO: replace with your deployed GAS web app base URL
 const GAS_BASE_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_ID/exec';
+const GAS_CONFIGURED = !GAS_BASE_URL.includes('YOUR_DEPLOYED_WEBAPP_ID') && GAS_BASE_URL.trim() !== '';
+
+function isGasConfigured(){
+  return GAS_CONFIGURED;
+}
+
+function ensureGasConfigured(){
+  if(!GAS_CONFIGURED){
+    throw new Error('Google Apps Script 未設定，請在 js/gas.js 中填入您的 GAS Web App URL');
+  }
+}
 
 async function gasGetTodos(){
+  ensureGasConfigured();
   try{
     const res = await fetch(`${GAS_BASE_URL}?action=get`);
     if(!res.ok) throw new Error('GAS get failed');
@@ -30,9 +42,9 @@ async function gasCreateTodo(todo){
 }
 
 async function gasUpdateTodo(id, fields){
+  ensureGasConfigured();
   try{
     const res = await fetch(GAS_BASE_URL,{
-      method:'PUT',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'update', id, fields})
     });
@@ -45,9 +57,9 @@ async function gasUpdateTodo(id, fields){
 }
 
 async function gasDeleteTodo(id){
+  ensureGasConfigured();
   try{
     const res = await fetch(GAS_BASE_URL,{
-      method:'DELETE',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'delete', id})
     });
