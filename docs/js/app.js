@@ -156,7 +156,7 @@ function render(){
       else if(t.status==='完成') t.status = '待處理';
       saveTodosLocal();
       render();
-      if(GAS_ENABLED){
+      if(isGasEnabled()){
         gasUpdateTodo(t.id,{completed:t.completed, status:t.status, completedAt: t.completed ? new Date().toISOString() : ''}).catch(err=>{
           console.warn('Gas update failed', err);
         });
@@ -201,7 +201,7 @@ function render(){
       if(t.status==='完成') t.completed = true;
       saveTodosLocal();
       render();
-      if(GAS_ENABLED){
+      if(isGasEnabled()){
         gasUpdateTodo(t.id,{status:t.status, completed:t.status==='完成'}).catch(err=>{
           console.warn('Gas status update failed', err);
         });
@@ -216,7 +216,7 @@ function render(){
         t.title = newText.trim();
         saveTodosLocal();
         render();
-        if(GAS_ENABLED){
+        if(isGasEnabled()){
           gasUpdateTodo(t.id,{title:t.title}).catch(err=>{
             console.warn('Gas update failed:', err);
             alert('更新 Google Spreadsheet 失敗，已本地儲存。');
@@ -232,7 +232,7 @@ function render(){
       todos = todos.filter(x=>x.id!==t.id);
       saveTodosLocal();
       render();
-      if(GAS_ENABLED){
+      if(isGasEnabled()){
         try{
           await gasDeleteTodo(t.id);
         }catch(e){
@@ -272,7 +272,7 @@ form.addEventListener('submit', async (e)=>{
     completedAt: status==='完成' ? new Date().toISOString() : ''
   };
 
-  if(GAS_ENABLED){
+  if(isGasEnabled()){
     try{
       const created = await gasCreateTodo(newTodo);
       if(created && created.id) newTodo.id = created.id;
@@ -311,7 +311,7 @@ fetchQuoteBtn.addEventListener('click', async ()=>{
       estimate:'',
       tags:''
     };
-    if(GAS_ENABLED){
+    if(isGasEnabled()){
       try{
         const created = await gasCreateTodo(newTodo);
         if(created && created.id) newTodo.id = created.id;
