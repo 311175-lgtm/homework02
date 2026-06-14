@@ -1,10 +1,21 @@
 // app.js: frontend logic (CRUD + UI)
-let todos = [];
+const STORAGE_KEY = 'todo-app-todos';
+let todos = loadTodosLocal();
 const listEl = document.getElementById('todo-list');
 const form = document.getElementById('todo-form');
 const input = document.getElementById('todo-input');
 const fetchQuoteBtn = document.getElementById('fetch-quote');
 const syncLoadBtn = document.getElementById('sync-load');
+
+function saveTodosLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+function loadTodosLocal(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return [];
+  try{return JSON.parse(raw);}catch(err){return []}
+}
 
 function render(){
   listEl.innerHTML='';
@@ -30,11 +41,12 @@ function render(){
     }
 
     const actions = document.createElement('div'); actions.className='todo-actions';
-    const editBtn = document.createElement('button'); editBtn.textContent='編輯';
+    const editBtn = document.createElement('button'); editBtn.type='button'; editBtn.textContent='編輯';
     editBtn.addEventListener('click', ()=>{
       const newText = prompt('編輯待辦', t.title);
       if(newText!=null && newText.trim()!==''){
         t.title = newText.trim();
+        saveTodosLocal();
         render();
         gasUpdateTodo(t.id,{title:t.title}).catch(err=>{
           console.warn('Gas update failed:', err);
@@ -42,10 +54,11 @@ function render(){
         });
       }
     });
-    const delBtn = document.createElement('button'); delBtn.textContent='刪除';
+    const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.textContent='刪除';
     delBtn.addEventListener('click', async ()=>{
       if(!confirm('確定刪除？')) return;
       todos = todos.filter(x=>x.id!==t.id);
+      saveTodosLocal();
       render();
       try{
         await gasDeleteTodo(t.id);
@@ -78,6 +91,7 @@ form.addEventListener('submit', async (e)=>{
   todos.unshift(newTodo);
   input.value='';
   document.getElementById('todo-date').value = '';
+  saveTodosLocal();
   render();
 });
 
@@ -106,6 +120,7 @@ syncLoadBtn.addEventListener('click', async ()=>{
     const data = await gasGetTodos();
     // expect array [{id,title,completed,createTime, dueDate}, ...]
     todos = Array.isArray(data) ? data.reverse() : [];
+    saveTodosLocal();
     render();
   }catch(err){
     console.error('Spreadsheet load failed', err);
