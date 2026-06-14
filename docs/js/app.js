@@ -56,6 +56,7 @@ function render(){
     });
     const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.textContent='刪除';
     delBtn.addEventListener('click', async ()=>{
+      console.log('delete clicked', t.id, t.title);
       if(!confirm('確定刪除？')) return;
       todos = todos.filter(x=>x.id!==t.id);
       saveTodosLocal();
