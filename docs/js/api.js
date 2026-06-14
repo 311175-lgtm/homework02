@@ -6,7 +6,20 @@ async function fetchRandomQuote(){
     const data = await res.json();
     return `${data.content} — ${data.author}`;
   }catch(err){
-    console.error('fetchRandomQuote error', err);
+    console.warn('fetchRandomQuote primary failed, trying fallback', err);
+    return fetchQuoteFallback();
+  }
+}
+
+async function fetchQuoteFallback(){
+  try{
+    const res = await fetch('https://type.fit/api/quotes');
+    if(!res.ok) throw new Error('Fallback API response not ok');
+    const quotes = await res.json();
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
+    return `${quote.text} — ${quote.author || 'Unknown'}`;
+  }catch(err){
+    console.error('fetchQuoteFallback error', err);
     throw err;
   }
 }
