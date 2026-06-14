@@ -1,26 +1,47 @@
 // Google Apps Script 範例，用於與 Spreadsheet 同步 To-Do List
-const SPREADSHEET_ID = '1GfcOPG59XWuU4FqCLPnnpYX-mFB2Q1ymfQihMpscQb2uSk9U7aI-TAe8';
+const SPREADSHEET_ID = '1E-YWBiO0q8_8Tc_kb44o0diWF0_aMrMCHpE3GpFXO7c';
 const SHEET_NAME = 'Sheet1';
 
 function doGet(e){
-  const action = e.parameter.action;
+  const action = e && e.parameter && e.parameter.action ? e.parameter.action : null;
+  if(!action){
+    return ContentService.createTextOutput(JSON.stringify({error:'Missing action parameter'})).setMimeType(ContentService.MimeType.JSON);
+  }
   if(action === 'get'){
-    return ContentService.createTextOutput(JSON.stringify(getAllTasks())).setMimeType(ContentService.MimeType.JSON);
+    try{
+      return ContentService.createTextOutput(JSON.stringify(getAllTasks())).setMimeType(ContentService.MimeType.JSON);
+    }catch(err){
+      return ContentService.createTextOutput(JSON.stringify({error:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+    }
   }
   return ContentService.createTextOutput(JSON.stringify({error:'Unknown action'})).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e){
-  const body = e.postData && e.postData.contents ? JSON.parse(e.postData.contents) : {};
+  if(!e || !e.postData || !e.postData.contents){
+    return ContentService.createTextOutput(JSON.stringify({error:'Missing post body'})).setMimeType(ContentService.MimeType.JSON);
+  }
+  const body = JSON.parse(e.postData.contents);
   const action = body.action;
-  if(action === 'create') return ContentService.createTextOutput(JSON.stringify(createTask(body.todo))).setMimeType(ContentService.MimeType.JSON);
-  if(action === 'update') return ContentService.createTextOutput(JSON.stringify(updateTask(body.id, body.fields))).setMimeType(ContentService.MimeType.JSON);
-  if(action === 'delete') return ContentService.createTextOutput(JSON.stringify(deleteTask(body.id))).setMimeType(ContentService.MimeType.JSON);
-  return ContentService.createTextOutput(JSON.stringify({error:'Unknown action'})).setMimeType(ContentService.MimeType.JSON);
+  try{
+    if(action === 'create') return ContentService.createTextOutput(JSON.stringify(createTask(body.todo))).setMimeType(ContentService.MimeType.JSON);
+    if(action === 'update') return ContentService.createTextOutput(JSON.stringify(updateTask(body.id, body.fields))).setMimeType(ContentService.MimeType.JSON);
+    if(action === 'delete') return ContentService.createTextOutput(JSON.stringify(deleteTask(body.id))).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({error:'Unknown action'})).setMimeType(ContentService.MimeType.JSON);
+  }catch(err){
+    return ContentService.createTextOutput(JSON.stringify({error:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function openSheet(){
-  return SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  try{
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if(!sheet) throw new Error('Sheet not found: ' + SHEET_NAME);
+    return sheet;
+  }catch(err){
+    throw new Error('openSheet failed: ' + err.toString());
+  }
 }
 
 function getAllTasks(){
