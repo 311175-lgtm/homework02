@@ -1,5 +1,5 @@
 // Google Apps Script 範例，用於與 Spreadsheet 同步 To-Do List
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID';
+const SPREADSHEET_ID = '1GfcOPG59XWuU4FqCLPnnpYX-mFB2Q1ymfQihMpscQb2uSk9U7aI-TAe8';
 const SHEET_NAME = 'Sheet1';
 
 function doGet(e){

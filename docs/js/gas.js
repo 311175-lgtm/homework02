@@ -1,6 +1,6 @@
 // gas.js: wrapper for Google Apps Script Web App endpoints
 // TODO: replace with your deployed GAS web app base URL
-const GAS_BASE_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_ID/exec';
+const GAS_BASE_URL = 'https://script.google.com/macros/s/AKfycbxZbSY17n-Em6aKyFfruo5c0aNuXccoYS5XU_3A5S6vjJDtnuqAqMOIbiZ10Jc68PY/exec';
 const GAS_CONFIGURED = !GAS_BASE_URL.includes('YOUR_DEPLOYED_WEBAPP_ID') && GAS_BASE_URL.trim() !== '';
 
 function isGasConfigured(){
