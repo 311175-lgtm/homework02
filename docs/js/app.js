@@ -1,6 +1,18 @@
 // app.js: frontend logic (CRUD + UI)
 const STORAGE_KEY = 'todo-app-todos';
+
+function loadTodosLocal(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return [];
+  try{return JSON.parse(raw);}catch(err){return []}
+}
+
+function saveTodosLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
 let todos = loadTodosLocal();
+
 const listEl = document.getElementById('todo-list');
 const form = document.getElementById('todo-form');
 const input = document.getElementById('todo-input');
@@ -11,20 +23,18 @@ const statusSelect = document.getElementById('todo-status');
 const prioritySelect = document.getElementById('todo-priority');
 const estimateInput = document.getElementById('todo-estimate');
 const tagsInput = document.getElementById('todo-tags');
-const filterCategory = document.getElementById('filter-category');
-const filterStatus = document.getElementById('filter-status');
-const filterPriority = document.getElementById('filter-priority');
+const filterCategoryButtons = document.querySelectorAll('.filter-btn');
+const filterStatusSidebar = document.getElementById('filter-status-sidebar');
 const filterKeyword = document.getElementById('filter-keyword');
 const sortSelect = document.getElementById('sort-select');
 const reviewButton = document.getElementById('review-button');
 const exportButton = document.getElementById('export-button');
 const summaryBox = document.getElementById('summary-box');
 const currentDateEl = document.getElementById('current-date');
+const currentDateSmall = document.getElementById('current-date-small');
+const miniCalendar = document.getElementById('mini-calendar');
+let selectedCategory = '';
 const GAS_ENABLED = typeof isGasConfigured === 'function' && isGasConfigured();
-
-function saveTodosLocal(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-}
 
 function formatCurrentDate(){
   const now = new Date();
@@ -37,12 +47,43 @@ function initCurrentDate(){
   if(currentDateEl){
     currentDateEl.textContent = formatCurrentDate();
   }
+  if(currentDateSmall){
+    const now = new Date();
+    currentDateSmall.textContent = `${now.getMonth() + 1}月${now.getDate()}日`;
+  }
 }
 
-function loadTodosLocal(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if(!raw) return [];
-  try{return JSON.parse(raw);}catch(err){return []}
+function renderMiniCalendar(){
+  if(!miniCalendar) return;
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDate = new Date(year, month + 1, 0).getDate();
+  const startDay = firstDay.getDay();
+  
+  const html = [`<div class="mini-calendar-header"><button>◀</button><span>${month + 1}月${year}</span><button>▶</button></div><div class="mini-calendar-grid">`];
+  
+  ['日','一','二','三','四','五','六'].forEach(d=>html.push(`<div>${d}</div>`));
+  
+  for(let i=0;i<startDay;i++) html.push('<div></div>');
+  for(let d=1;d<=lastDate;d++){
+    const cls = d===now.getDate()?'mini-calendar-day today':'mini-calendar-day current';
+    html.push(`<div class="${cls}">${d}</div>`);
+  }
+  html.push('</div>');
+  miniCalendar.innerHTML = html.join('');
+}
+
+function initCategoryButtons(){
+  filterCategoryButtons.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      filterCategoryButtons.forEach(b=>b.classList.remove('active'));
+      selectedCategory = btn.dataset.category || '';
+      btn.classList.add('active');
+      render();
+    });
+  });
 }
 
 function formatPriorityRank(priority){
@@ -69,9 +110,8 @@ function compareTasks(a,b){
 function getFilteredTodos(){
   return todos
     .filter(t=>{
-      if(filterCategory.value && t.category !== filterCategory.value) return false;
-      if(filterStatus.value && t.status !== filterStatus.value) return false;
-      if(filterPriority.value && t.priority !== filterPriority.value) return false;
+      if(selectedCategory && t.category !== selectedCategory) return false;
+      if(filterStatusSidebar.value && t.status !== filterStatusSidebar.value) return false;
       const keyword = filterKeyword.value.trim().toLowerCase();
       if(!keyword) return true;
       return [t.title, t.category, t.status, t.priority, t.tags, t.dueDate]
@@ -359,10 +399,12 @@ function computeWeeklyReview(){
 
 reviewButton.addEventListener('click', computeWeeklyReview);
 
-[filterCategory, filterStatus, filterPriority, filterKeyword, sortSelect].forEach(el=>{
+[filterStatusSidebar, filterKeyword, sortSelect].forEach(el=>{
   el.addEventListener('change', render);
 });
 
 // initial render
 initCurrentDate();
+renderMiniCalendar();
+initCategoryButtons();
 render();
