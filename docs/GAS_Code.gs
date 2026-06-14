@@ -36,8 +36,16 @@ function doPost(e){
 function openSheet(){
   try{
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
-    if(!sheet) throw new Error('Sheet not found: ' + SHEET_NAME);
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if(!sheet){
+      const sheets = ss.getSheets();
+      if(sheets && sheets.length>0){
+        sheet = sheets[0];
+        // fallback: use first sheet if named sheet not found
+      }else{
+        throw new Error('Sheet not found: ' + SHEET_NAME);
+      }
+    }
     return sheet;
   }catch(err){
     throw new Error('openSheet failed: ' + err.toString());
