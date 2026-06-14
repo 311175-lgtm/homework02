@@ -6,6 +6,11 @@ const form = document.getElementById('todo-form');
 const input = document.getElementById('todo-input');
 const fetchQuoteBtn = document.getElementById('fetch-quote');
 const syncLoadBtn = document.getElementById('sync-load');
+const categorySelect = document.getElementById('todo-category');
+const statusSelect = document.getElementById('todo-status');
+const prioritySelect = document.getElementById('todo-priority');
+const estimateInput = document.getElementById('todo-estimate');
+const tagsInput = document.getElementById('todo-tags');
 const GAS_ENABLED = typeof isGasConfigured === 'function' && isGasConfigured();
 
 function saveTodosLocal(){
@@ -35,10 +40,26 @@ function render(){
     if(t.completed) title.classList.add('todo-completed');
     left.appendChild(chk); left.appendChild(title);
 
+    const meta = document.createElement('div'); meta.className='todo-details';
+    meta.textContent = `${t.category || '未分類'} · ${t.status || '待處理'} · ${t.priority || '無優先級'}`;
+    left.appendChild(meta);
+
     if(t.dueDate){
       const detail = document.createElement('div'); detail.className='todo-details';
       detail.textContent = `到期日：${t.dueDate}`;
       left.appendChild(detail);
+    }
+
+    if(t.estimate){
+      const estimate = document.createElement('div'); estimate.className='todo-details';
+      estimate.textContent = `預估：${t.estimate} 小時`;
+      left.appendChild(estimate);
+    }
+
+    if(t.tags){
+      const tags = document.createElement('div'); tags.className='todo-details';
+      tags.textContent = t.tags;
+      left.appendChild(tags);
     }
 
     const actions = document.createElement('div'); actions.className='todo-actions';
@@ -84,8 +105,23 @@ form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const title = input.value.trim();
   const dueDate = document.getElementById('todo-date').value;
+  const category = categorySelect.value;
+  const status = statusSelect.value;
+  const priority = prioritySelect.value;
+  const estimate = estimateInput.value;
+  const tags = tagsInput.value.trim();
   if(!title) return;
-  const newTodo = {title, completed:false, createTime: new Date().toISOString(), dueDate: dueDate || ''};
+  const newTodo = {
+    title,
+    completed:false,
+    createTime: new Date().toISOString(),
+    dueDate: dueDate || '',
+    category,
+    status,
+    priority,
+    estimate: estimate || '',
+    tags
+  };
   try{
     const created = await gasCreateTodo(newTodo);
     if(created && created.id) newTodo.id = created.id;
@@ -99,6 +135,11 @@ form.addEventListener('submit', async (e)=>{
   todos.unshift(newTodo);
   input.value='';
   document.getElementById('todo-date').value = '';
+  categorySelect.value = '';
+  statusSelect.value = '待處理';
+  prioritySelect.value = '';
+  estimateInput.value = '';
+  tagsInput.value = '';
   saveTodosLocal();
   render();
 });
