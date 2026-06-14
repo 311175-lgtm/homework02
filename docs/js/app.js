@@ -34,7 +34,10 @@ const currentDateEl = document.getElementById('current-date');
 const currentDateSmall = document.getElementById('current-date-small');
 const miniCalendar = document.getElementById('mini-calendar');
 let selectedCategory = '';
-const GAS_ENABLED = typeof isGasConfigured === 'function' && isGasConfigured();
+
+function isGasEnabled(){
+  return typeof isGasConfigured === 'function' && isGasConfigured();
+}
 
 function formatCurrentDate(){
   const now = new Date();
@@ -330,7 +333,7 @@ fetchQuoteBtn.addEventListener('click', async ()=>{
 });
 
 syncLoadBtn.addEventListener('click', async ()=>{
-  if(!GAS_ENABLED){
+  if(!isGasEnabled()){
     alert('Google Spreadsheet 尚未設定，無法從 GAS 載入。');
     return;
   }
