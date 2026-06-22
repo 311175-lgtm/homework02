@@ -1,6 +1,6 @@
 // gas.js: wrapper for Google Apps Script Web App endpoints
 // TODO: replace with your deployed GAS web app base URL
-const GAS_BASE_URL = 'https://script.google.com/macros/s/AKfycbxT51RsdJSaMYI-o__fv7UVGZp9BzTmmkN5JZhh6wqk8JLmKddX1WppJMddV4SXyPRv/exec';
+const GAS_BASE_URL = 'https://script.google.com/macros/s/AKfycbwfhPh38hTVxS1X3pQzrrRGlaHaXnuX9EHD0fgOV7NNKyNyys8rPiC_xC41dm0NP8d3/exec';
 
 const GAS_CONFIGURED = GAS_BASE_URL.startsWith('https://script.google.com/macros/s/') && GAS_BASE_URL.trim() !== '';
 function isGasConfigured(){
